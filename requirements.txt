@@ -36,3 +36,7 @@ iniconfig==2.0.0
 # --- Tipagem e validação ---
 pydantic==2.6.1
 annotated-types==0.6.0
+
+# caso de erro do pydantic-core, descomentar as linhas abaixo e comentar a linha do pidantic
+# pip install "pydantic-core>=2.41.0" --only-binary=pydantic-core
+# pip install --no-deps -r requirements.txt
