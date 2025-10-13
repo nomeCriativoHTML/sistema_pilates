@@ -11,7 +11,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 router = APIRouter()
 
-# Página de cadastro (mantemos apenas esta página web)
+# Página de cadastro
 @router.get("/cadastro", response_class=HTMLResponse)
 async def pagina_cadastro(request: Request):
     return templates.TemplateResponse("cadastro.html", {"request": request})
@@ -42,6 +42,7 @@ async def criar_aluno(
     except Exception as e:
         # Redireciona de volta com mensagem de erro
         return RedirectResponse(url=f"/alunos/cadastro?error={str(e)}", status_code=303)
+
 
 # ===== API ENDPOINTS (CRUD COMPLETO) =====
 
