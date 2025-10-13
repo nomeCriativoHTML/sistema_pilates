@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from enum import Enum
 from datetime import datetime, date
 from typing import Optional
@@ -19,7 +19,7 @@ class Presenca(str, Enum):
     ausente = "ausente"
     indefinido = "indefinido"
 
-# Schemas
+# Schemas atualizados para Pydantic V2
 
 # ---- MinhaConta ----
 class MinhaContaBase(BaseModel):
@@ -37,8 +37,7 @@ class MinhaContaUpdate(MinhaContaBase):
 class MinhaContaOut(MinhaContaBase):
     oid: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)  # Atualizado para Pydantic V2
 
 # ---- AulasDisponiveis ----
 class AulasDisponiveisBase(BaseModel):
@@ -56,8 +55,7 @@ class AulasDisponiveisUpdate(AulasDisponiveisBase):
 class AulasDisponiveisOut(AulasDisponiveisBase):
     oid: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 # ---- MinhaEvolucao ----
 class MinhaEvolucaoBase(BaseModel):
@@ -76,8 +74,7 @@ class MinhaEvolucaoUpdate(MinhaEvolucaoBase):
 class MinhaEvolucaoOut(MinhaEvolucaoBase):
     oid: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 # ---- MeusPagamentos ----
 class MeusPagamentosBase(BaseModel):
@@ -95,8 +92,7 @@ class MeusPagamentosUpdate(MeusPagamentosBase):
 class MeusPagamentosOut(MeusPagamentosBase):
     oid: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 # ---- Agendamentos ----
 class AgendamentosBase(BaseModel):
@@ -114,5 +110,4 @@ class AgendamentosUpdate(AgendamentosBase):
 class AgendamentosOut(AgendamentosBase):
     oid: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

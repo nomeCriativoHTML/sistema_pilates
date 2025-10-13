@@ -1,10 +1,10 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from enum import Enum
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 from decimal import Decimal
 
-# Enums
+# Enums (mantém igual)
 class Status(str, Enum):
     ativo = "ativo"
     inativo = "inativo"
@@ -29,14 +29,13 @@ class DashboardUpdate(DashboardBase):
 class DashboardOut(DashboardBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)  # Atualizado para Pydantic V2
 
 # ---- LogsDoSistema ----
 class LogsDoSistemaBase(BaseModel):
     usuario: str
     acao: str
-    data_hora: date
+    data_hora: datetime  # Mudei para datetime
     sistema_operacional: Optional[str] = None
     navegador: Optional[str] = None
     ip_address: Optional[str] = None
@@ -50,8 +49,7 @@ class LogsDoSistemaUpdate(LogsDoSistemaBase):
 class LogsDoSistemaOut(LogsDoSistemaBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 # ---- GestaoDeEstudos ----
 class GestaoDeEstudosBase(BaseModel):
@@ -63,17 +61,10 @@ class GestaoDeEstudosBase(BaseModel):
     total_professores: int = 0
     total_alunos: int = 0
 
-class GestaoDeEstudosCreate(GestaoDeEstudosBase):
-    pass
-
-class GestaoDeEstudosUpdate(GestaoDeEstudosBase):
-    pass
-
 class GestaoDeEstudosOut(GestaoDeEstudosBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 # ---- GestaoDeProfessores ----
 class GestaoDeProfessoresBase(BaseModel):
@@ -86,17 +77,10 @@ class GestaoDeProfessoresBase(BaseModel):
     total_estudos: int = 0
     total_alunos: int = 0
 
-class GestaoDeProfessoresCreate(GestaoDeProfessoresBase):
-    pass
-
-class GestaoDeProfessoresUpdate(GestaoDeProfessoresBase):
-    pass
-
 class GestaoDeProfessoresOut(GestaoDeProfessoresBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 # ---- GestaoDeAlunos ----
 class GestaoDeAlunosBase(BaseModel):
@@ -109,17 +93,10 @@ class GestaoDeAlunosBase(BaseModel):
     total_estudos: int = 0
     total_professores: int = 0
 
-class GestaoDeAlunosCreate(GestaoDeAlunosBase):
-    pass
-
-class GestaoDeAlunosUpdate(GestaoDeAlunosBase):
-    pass
-
 class GestaoDeAlunosOut(GestaoDeAlunosBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 # ---- RelatoriosDeEvolucao ----
 class RelatoriosDeEvolucaoBase(BaseModel):
@@ -139,8 +116,7 @@ class RelatoriosDeEvolucaoUpdate(RelatoriosDeEvolucaoBase):
 class RelatoriosDeEvolucaoOut(RelatoriosDeEvolucaoBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 # ---- RelatoriosFinanceiros ----
 class RelatoriosFinanceirosBase(BaseModel):
@@ -160,5 +136,42 @@ class RelatoriosFinanceirosUpdate(RelatoriosFinanceirosBase):
 class RelatoriosFinanceirosOut(RelatoriosFinanceirosBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
+
+# ==== CLASSES PARA TESTES E EXEMPLOS ====
+# ESTA CLASSE PRECISA EXISTIR ↓
+
+class GestaoDeAlunosCreate(BaseModel):
+    nome: str
+    email: str
+    telefone: str
+    status_pagamento: Optional[str] = None
+
+class GestaoDeAlunosUpdate(BaseModel):
+    nome: Optional[str] = None
+    email: Optional[str] = None
+    telefone: Optional[str] = None
+    status_pagamento: Optional[str] = None
+
+# ESTA CLASSE PRECISA EXISTIR ↓
+class GestaoDeProfessoresCreate(BaseModel):
+    nome: str
+    email: str
+    telefone: str
+    especialidade: Optional[str] = None
+
+class GestaoDeProfessoresUpdate(BaseModel):
+    nome: Optional[str] = None
+    email: Optional[str] = None
+    telefone: Optional[str] = None
+    especialidade: Optional[str] = None
+
+class GestaoDeEstudosCreate(BaseModel):
+    nome: str
+    endereco: str
+    telefone: str
+
+class GestaoDeEstudosUpdate(BaseModel):
+    nome: Optional[str] = None
+    endereco: Optional[str] = None
+    telefone: Optional[str] = None
