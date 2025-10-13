@@ -14,7 +14,7 @@ def create_aluno(db: Session, aluno: GestaoDeAlunosCreate):
     if existing_aluno:
         raise HTTPException(status_code=400, detail="Email já cadastrado")
     
-    db_aluno = GestaoDeAlunos(**aluno.model_dump())  # Atualizado para model_dump()
+    db_aluno = GestaoDeAlunos(**aluno.model_dump()) 
     db.add(db_aluno)
     db.commit()
     db.refresh(db_aluno)
@@ -28,7 +28,7 @@ def update_aluno(db: Session, aluno_id: int, aluno: GestaoDeAlunosUpdate):
     if not db_aluno:
         raise HTTPException(status_code=404, detail="Aluno não encontrado")
     
-    update_data = aluno.model_dump(exclude_unset=True)  # Atualizado para model_dump()
+    update_data = aluno.model_dump(exclude_unset=True)  
     for key, value in update_data.items():
         setattr(db_aluno, key, value)
     
