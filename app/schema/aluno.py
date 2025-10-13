@@ -19,8 +19,6 @@ class Presenca(str, Enum):
     ausente = "ausente"
     indefinido = "indefinido"
 
-# Schemas atualizados para Pydantic V2
-
 # ---- MinhaConta ----
 class MinhaContaBase(BaseModel):
     nome: str
@@ -37,7 +35,7 @@ class MinhaContaUpdate(MinhaContaBase):
 class MinhaContaOut(MinhaContaBase):
     oid: int
 
-    model_config = ConfigDict(from_attributes=True)  # Atualizado para Pydantic V2
+    model_config = ConfigDict(from_attributes=True) 
 
 # ---- AulasDisponiveis ----
 class AulasDisponiveisBase(BaseModel):

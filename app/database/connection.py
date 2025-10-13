@@ -16,10 +16,8 @@ DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYS
 
 engine = create_engine(DATABASE_URL)
 
-# Criando a SessionLocal
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Base para os models herdarem
 Base = declarative_base()
 
 # Função para dependency injection

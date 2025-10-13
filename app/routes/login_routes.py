@@ -14,7 +14,6 @@ async def login(
     email: str = Form(...),
     password: str = Form(...)
 ):
-    # Lógica básica de login - você pode expandir isso
     if email and password:
         return RedirectResponse(url="/home", status_code=303)
     else:

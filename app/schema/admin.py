@@ -4,7 +4,7 @@ from datetime import date, datetime
 from typing import Optional
 from decimal import Decimal
 
-# Enums (mantém igual)
+# Enums
 class Status(str, Enum):
     ativo = "ativo"
     inativo = "inativo"
@@ -29,13 +29,13 @@ class DashboardUpdate(DashboardBase):
 class DashboardOut(DashboardBase):
     id: int
 
-    model_config = ConfigDict(from_attributes=True)  # Atualizado para Pydantic V2
+    model_config = ConfigDict(from_attributes=True)
 
 # ---- LogsDoSistema ----
 class LogsDoSistemaBase(BaseModel):
     usuario: str
     acao: str
-    data_hora: datetime  # Mudei para datetime
+    data_hora: datetime 
     sistema_operacional: Optional[str] = None
     navegador: Optional[str] = None
     ip_address: Optional[str] = None
@@ -138,8 +138,7 @@ class RelatoriosFinanceirosOut(RelatoriosFinanceirosBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-# ==== CLASSES PARA TESTES E EXEMPLOS ====
-# ESTA CLASSE PRECISA EXISTIR ↓
+# ---- Classes de criação e atualização específicas ----
 
 class GestaoDeAlunosCreate(BaseModel):
     nome: str
@@ -153,7 +152,6 @@ class GestaoDeAlunosUpdate(BaseModel):
     telefone: Optional[str] = None
     status_pagamento: Optional[str] = None
 
-# ESTA CLASSE PRECISA EXISTIR ↓
 class GestaoDeProfessoresCreate(BaseModel):
     nome: str
     email: str
