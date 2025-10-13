@@ -1,52 +1,75 @@
 from sqlalchemy.orm import Session
-from app.models.aluno import MinhaConta
-from app.schema.aluno import MinhaContaCreate, MinhaContaUpdate
-from fastapi import HTTPException
+from fastapi import HTTPException, status
+from app.models.aluno import Aluno
+from app.schema.aluno import AlunoCreate, AlunoUpdate
 
 class AlunoController:
-    
+
     @staticmethod
-    def criar_aluno(db: Session, aluno: MinhaContaCreate):
-        # Verificar se email já existe
-        aluno_existente = db.query(MinhaConta).filter(MinhaConta.email == aluno.email).first()
+    def criar_aluno(db: Session, aluno: AlunoCreate):
+        # Verificar se o email já existe
+        aluno_existente = db.query(Aluno).filter(Aluno.email == aluno.email).first()
         if aluno_existente:
-            raise HTTPException(status_code=400, detail="Email já cadastrado")
-        
-        db_aluno = MinhaConta(
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="E-mail já cadastrado."
+            )
+
+        # Criar novo aluno
+        novo_aluno = Aluno(
             nome=aluno.nome,
-            email=aluno.email,
             telefone=aluno.telefone,
+            email=aluno.email,
+            data_nascimento=aluno.data_nascimento,
             status_pagamento=aluno.status_pagamento
         )
-        db.add(db_aluno)
+
+        db.add(novo_aluno)
         db.commit()
-        db.refresh(db_aluno)
-        return db_aluno
-    
+        db.refresh(novo_aluno)
+        return novo_aluno
+
     @staticmethod
     def listar_alunos(db: Session):
-        return db.query(MinhaConta).all()
-    
+        alunos = db.query(Aluno).all()
+        return alunos
+
     @staticmethod
     def obter_aluno(db: Session, aluno_id: int):
-        return db.query(MinhaConta).filter(MinhaConta.oid == aluno_id).first()
-    
+        aluno = db.query(Aluno).filter(Aluno.id == aluno_id).first()
+        if not aluno:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Aluno não encontrado."
+            )
+        return aluno
+
     @staticmethod
-    def atualizar_aluno(db: Session, aluno_id: int, aluno_data: dict):
-        # Remover campos None do update
-        aluno_data = {k: v for k, v in aluno_data.items() if v is not None}
-        
-        if not aluno_data:
-            raise HTTPException(status_code=400, detail="Nenhum dado para atualizar")
-        
-        db.query(MinhaConta).filter(MinhaConta.oid == aluno_id).update(aluno_data)
+    def atualizar_aluno(db: Session, aluno_id: int, aluno_data: AlunoUpdate):
+        aluno = db.query(Aluno).filter(Aluno.id == aluno_id).first()
+        if not aluno:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Aluno não encontrado."
+            )
+
+        update_data = aluno_data.dict(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(aluno, key, value)
+
         db.commit()
-        return db.query(MinhaConta).filter(MinhaConta.oid == aluno_id).first()
-    
+        db.refresh(aluno)
+        return aluno
+
     @staticmethod
     def excluir_aluno(db: Session, aluno_id: int):
-        aluno = db.query(MinhaConta).filter(MinhaConta.oid == aluno_id).first()
-        if aluno:
-            db.delete(aluno)
-            db.commit()
-        return aluno
+        aluno = db.query(Aluno).filter(Aluno.id == aluno_id).first()
+        if not aluno:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Aluno não encontrado."
+            )
+
+        db.delete(aluno)
+        db.commit()
+        return {"mensagem": f"Aluno {aluno.nome} excluído com sucesso."}

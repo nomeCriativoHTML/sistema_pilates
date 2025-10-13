@@ -20,20 +20,21 @@ class Presenca(str, Enum):
     indefinido = "indefinido"
 
 # ---- MinhaConta ----
-class MinhaContaBase(BaseModel):
+class AlunoBase(BaseModel):
     nome: str
     telefone: Optional[str] = None
     email: EmailStr
-    status_pagamento: Optional[StatusPagamento] = None
+    data_nascimento: Optional[date] = None
+    status_pagamento: StatusPagamento = StatusPagamento.pendente
 
-class MinhaContaCreate(MinhaContaBase):
+class AlunoCreate(AlunoBase):
     pass
 
-class MinhaContaUpdate(MinhaContaBase):
+class AlunoUpdate(AlunoBase):
     pass
 
-class MinhaContaOut(MinhaContaBase):
-    oid: int
+class AlunoOut(AlunoBase):
+    id: int
 
     model_config = ConfigDict(from_attributes=True) 
 

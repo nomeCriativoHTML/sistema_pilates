@@ -1,26 +1,17 @@
-// Navegação entre abas
+// --- Abas ---
 document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
-        // Remove classe ativa de todas as abas
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('ativo'));
-        // Remove classe ativa de todos os formulários
         document.querySelectorAll('.formulario').forEach(f => f.classList.remove('ativo'));
-        
-        // Adiciona classe ativa na aba clicada
         tab.classList.add('ativo');
-        
-        // Mostra o formulário correspondente
-        const formId = `form-${tab.dataset.tab}`;
-        document.getElementById(formId).classList.add('ativo');
+        document.getElementById(`form-${tab.dataset.tab}`).classList.add('ativo');
     });
 });
 
-// Botão voltar
-document.querySelector('.btn-voltar').addEventListener('click', () => {
-    window.history.back();
-});
+// --- Botão voltar ---
+document.querySelector('.btn-voltar').addEventListener('click', () => window.history.back());
 
-// Botão cancelar
+// --- Botão cancelar ---
 document.querySelectorAll('.cancelar').forEach(btn => {
     btn.addEventListener('click', () => {
         if (confirm('Deseja cancelar o cadastro? Os dados não salvos serão perdidos.')) {
@@ -29,23 +20,27 @@ document.querySelectorAll('.cancelar').forEach(btn => {
     });
 });
 
-// Formulário Aluno
 document.getElementById('form-aluno').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
+
     const formData = new FormData(this);
-    
+    const data = Object.fromEntries(formData.entries()); // converte para JSON
+
     try {
         const response = await fetch('/alunos/cadastro/aluno', {
             method: 'POST',
-            body: formData
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
-        
+
         if (response.ok) {
             alert('Aluno cadastrado com sucesso!');
-            this.reset(); // Limpa o formulário
+            this.reset();
         } else {
-            alert('Erro ao cadastrar aluno. Tente novamente.');
+            const error = await response.json();
+            alert('Erro: ' + (error.error || 'Tente novamente.'));
         }
     } catch (error) {
         console.error('Erro:', error);
@@ -53,34 +48,11 @@ document.getElementById('form-aluno').addEventListener('submit', async function(
     }
 });
 
-// Máscara de telefone
-function mascaraTelefone(telefone) {
-    const texto = telefone.value.replace(/\D/g, '');
-    const regex = /^(\d{2})(\d{5})(\d{4})$/;
-    
-    if (regex.test(texto)) {
-        telefone.value = texto.replace(regex, '($1) $2-$3');
-    }
+// --- Máscara telefone ---
+function mascaraTelefone(input) {
+    const texto = input.value.replace(/\D/g, '');
+    input.value = texto.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
 }
-
-document.querySelectorAll('input[type="tel"]').forEach(input => {
-    input.addEventListener('input', (e) => mascaraTelefone(e.target));
-});
-
-// Verificar parâmetros da URL para mensagens
-document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    if (urlParams.has('success')) {
-        alert('Aluno cadastrado com sucesso!');
-        // Limpa a URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-    
-    if (urlParams.has('error')) {
-        const error = urlParams.get('error');
-        alert(`Erro: ${error}`);
-        // Limpa a URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-});
+document.querySelectorAll('input[type="tel"]').forEach(input =>
+    input.addEventListener('input', e => mascaraTelefone(e.target))
+);

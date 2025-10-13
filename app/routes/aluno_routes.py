@@ -1,80 +1,110 @@
-from fastapi import APIRouter, Request, Depends, Form, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
-from sqlalchemy.orm import Session
-from app.database.connection import get_db
-from app.models.aluno import MinhaConta
-from app.schema.aluno import MinhaContaCreate, MinhaContaUpdate
-from app.controllers.aluno_controller import AlunoController
+from fastapi import APIRouter, Request, Depends, Form, HTTPException, status
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
+
+from app.database.connection import get_db
+from app.controllers.aluno_controller import AlunoController
+from app.schema.aluno import AlunoCreate, AlunoUpdate
 
 templates = Jinja2Templates(directory="app/templates")
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/alunos",
+    tags=["Alunos"]
+)
 
-# Página de cadastro
+# =====================================================
+# PÁGINAS HTML (Renderizadas com Jinja2)
+# =====================================================
+
 @router.get("/cadastro", response_class=HTMLResponse)
-async def pagina_cadastro(request: Request):
-    return templates.TemplateResponse("cadastro.html", {"request": request})
+async def pagina_cadastro(request: Request, success: bool = False, error: str = None):
+    """
+    Exibe a página de cadastro de alunos.
+    Pode exibir mensagem de sucesso/erro após submissão do formulário.
+    """
+    return templates.TemplateResponse(
+        "cadastro.html",
+        {"request": request, "success": success, "error": error}
+    )
 
-# Criar aluno via formulário web
+
 @router.post("/cadastro/aluno")
-async def criar_aluno(
-    request: Request,
-    nome: str = Form(...),
-    email: str = Form(...),
-    telefone: str = Form(...),
-    estudio: str = Form(None),
-    status: str = Form(None),
-    db: Session = Depends(get_db)
-):
+async def criar_aluno_json(request: Request, db: Session = Depends(get_db)):
+    """
+    Recebe os dados do formulário via JSON e cria um aluno no banco.
+    Retorna uma resposta JSON para o front.
+    """
     try:
-        aluno_data = MinhaContaCreate(
-            nome=nome,
-            email=email,
-            telefone=telefone,
-            status_pagamento=status
+        data = await request.json()
+
+        aluno_data = AlunoCreate(
+            nome=data.get("nome"),
+            email=data.get("email"),
+            telefone=data.get("telefone"),
+            data_nascimento=data.get("data_nascimento"),
+            status_pagamento=data.get("status_pagamento", "pendente"),
         )
-        
-        aluno = AlunoController.criar_aluno(db, aluno_data)
-        # Redireciona de volta para o cadastro com mensagem de sucesso
-        return RedirectResponse(url="/alunos/cadastro?success=true", status_code=303)
-    
+
+        AlunoController.criar_aluno(db, aluno_data)
+
+        return JSONResponse(
+            content={"message": "Aluno cadastrado com sucesso!"},
+            status_code=status.HTTP_201_CREATED
+        )
+
+    except HTTPException as e:
+        return JSONResponse(
+            content={"error": e.detail},
+            status_code=e.status_code
+        )
+
     except Exception as e:
-        # Redireciona de volta com mensagem de erro
-        return RedirectResponse(url=f"/alunos/cadastro?error={str(e)}", status_code=303)
+        return JSONResponse(
+            content={"error": f"Erro inesperado: {str(e)}"},
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+# =====================================================
+# ENDPOINTS RESTFUL (API)
+# =====================================================
+
+@router.post("/", response_model=None, status_code=status.HTTP_201_CREATED)
+def criar_aluno_api(aluno: AlunoCreate, db: Session = Depends(get_db)):
+    """
+    Cria um novo aluno via API.
+    """
+    return AlunoController.criar_aluno(db, aluno)
 
 
-# ===== API ENDPOINTS (CRUD COMPLETO) =====
-
-# Listar todos os alunos (API)
-@router.get("/")
+@router.get("/", response_model=None)
 def listar_alunos(db: Session = Depends(get_db)):
+    """
+    Lista todos os alunos.
+    """
     return AlunoController.listar_alunos(db)
 
-# Obter aluno específico (API)
-@router.get("/{aluno_id}")
+
+@router.get("/{aluno_id}", response_model=None)
 def obter_aluno(aluno_id: int, db: Session = Depends(get_db)):
-    aluno = AlunoController.obter_aluno(db, aluno_id)
-    if not aluno:
-        raise HTTPException(status_code=404, detail="Aluno não encontrado")
-    return aluno
+    """
+    Retorna um aluno específico pelo ID.
+    """
+    return AlunoController.obter_aluno(db, aluno_id)
 
-# Atualizar aluno (API)
-@router.put("/{aluno_id}")
-def atualizar_aluno(
-    aluno_id: int, 
-    aluno_data: MinhaContaUpdate, 
-    db: Session = Depends(get_db)
-):
-    aluno = AlunoController.atualizar_aluno(db, aluno_id, aluno_data.dict())
-    if not aluno:
-        raise HTTPException(status_code=404, detail="Aluno não encontrado")
-    return aluno
 
-# Excluir aluno (API)
-@router.delete("/{aluno_id}")
+@router.put("/{aluno_id}", response_model=None)
+def atualizar_aluno(aluno_id: int, aluno_data: AlunoUpdate, db: Session = Depends(get_db)):
+    """
+    Atualiza os dados de um aluno existente.
+    """
+    return AlunoController.atualizar_aluno(db, aluno_id, aluno_data)
+
+
+@router.delete("/{aluno_id}", status_code=status.HTTP_204_NO_CONTENT)
 def excluir_aluno(aluno_id: int, db: Session = Depends(get_db)):
-    aluno = AlunoController.excluir_aluno(db, aluno_id)
-    if not aluno:
-        raise HTTPException(status_code=404, detail="Aluno não encontrado")
-    return {"message": "Aluno excluído com sucesso"}
+    """
+    Exclui um aluno pelo ID.
+    """
+    return AlunoController.excluir_aluno(db, aluno_id)

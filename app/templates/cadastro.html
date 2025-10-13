@@ -27,38 +27,40 @@
 
      
       <form id="form-aluno" class="formulario ativo">
-        <fieldset>
-          <legend>Informações do Aluno</legend>
+  <fieldset>
+    <legend>Informações do Aluno</legend>
 
-          <label for="nome">Nome completo</label>
-          <input type="text" id="nome" name="nome" placeholder="Digite o nome do aluno" required>
+    <label for="nome">Nome completo</label>
+    <input type="text" id="nome" name="nome" placeholder="Digite o nome do aluno" required>
 
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder="email@exemplo.com" required>
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" placeholder="email@exemplo.com" required>
 
-          <label for="telefone">Telefone</label>
-          <input type="tel" id="telefone" name="telefone" placeholder="(11)99999-9999" required>
+    <label for="telefone">Telefone</label>
+    <input type="tel" id="telefone" name="telefone" placeholder="(11)99999-9999" required>
 
-          <label for="estudio">Estúdio</label>
-          <select id="estudio" name="estudio" required>
-            <option value="" disabled selected>Selecione um estúdio</option>
-            <option value="unidade1">Unidade 1</option>
-            <option value="unidade2">Unidade 2</option>
-          </select>
+    <label for="estudio">Estúdio</label>
+    <select id="estudio" name="estudio" required>
+      <option value="" disabled selected>Selecione um estúdio</option>
+      <option value="unidade1">Unidade 1</option>
+      <option value="unidade2">Unidade 2</option>
+    </select>
 
-          <label for="status">Status de pagamento</label>
-          <select id="status" name="status" required>
-            <option value="" disabled selected>Selecione o status</option>
-            <option value="em-dia">Em dia</option>
-            <option value="atrasado">Atrasado</option>
-          </select>
-        </fieldset>   
+    <label for="status">Status de pagamento</label>
+    <select id="status" name="status" required>
+      <option value="" disabled selected>Selecione o status</option>
+      <option value="pendente">Pendente</option>
+      <option value="pago">Pago</option>
+      <option value="atrasado">Atrasado</option>
+    </select>
+  </fieldset>
 
-        <div class="form-actions">
-          <button type="button" class="btn cancelar">Cancelar</button>
-          <button type="submit" class="btn salvar">Salvar</button>
-        </div>
-      </form>
+  <div class="form-actions">
+    <button type="button" class="btn cancelar">Cancelar</button>
+    <button type="submit" class="btn salvar">Salvar</button>
+  </div>
+</form>
+
 
       
       <form id="form-professor" class="formulario">
