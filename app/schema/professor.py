@@ -1,9 +1,9 @@
 from pydantic import BaseModel, EmailStr
 from enum import Enum
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
-# Enums
+# --- Enums ---
 class TipoIdentificador(str, Enum):
     cpf = "cpf"
     rg = "rg"
@@ -19,81 +19,98 @@ class Presenca(str, Enum):
     ausente = "ausente"
     indefinido = "indefinido"
 
-# ---- MinhaContaProfessor ----
-class MinhaContaProfessorBase(BaseModel):
+# --- Professor ---
+class ProfessorBase(BaseModel):
     nome: str
     email: EmailStr
     senha: str
     identificador: Optional[str] = None
     tipo_identificador: Optional[TipoIdentificador] = None
-    professor: Optional[bool] = True
+    ativo: Optional[bool] = True
 
-class MinhaContaProfessorCreate(MinhaContaProfessorBase):
+class ProfessorCreate(ProfessorBase):
     pass
 
-class MinhaContaProfessorUpdate(MinhaContaProfessorBase):
-    pass
+class ProfessorUpdate(BaseModel):
+    nome: Optional[str] = None
+    email: Optional[EmailStr] = None
+    senha: Optional[str] = None
+    identificador: Optional[str] = None
+    tipo_identificador: Optional[TipoIdentificador] = None
+    ativo: Optional[bool] = None
 
-class MinhaContaProfessorOut(MinhaContaProfessorBase):
+class ProfessorOut(ProfessorBase):
     id: int
 
     class Config:
         orm_mode = True
 
-# ---- MinhaAgenda ----
-class MinhaAgendaBase(BaseModel):
+# --- Agenda ---
+class AgendaBase(BaseModel):
+    professor_id: int
     data_hora: datetime
     tipo_aula: str
     estudo: str
-    alunos_confirmados: int = 0
-    max_alunos: int = 3
+    alunos_confirmados: Optional[int] = 0
+    max_alunos: Optional[int] = 3
     status: Optional[StatusAula] = StatusAula.disponivel
 
-class MinhaAgendaCreate(MinhaAgendaBase):
+class AgendaCreate(AgendaBase):
     pass
 
-class MinhaAgendaUpdate(MinhaAgendaBase):
-    pass
+class AgendaUpdate(BaseModel):
+    data_hora: Optional[datetime] = None
+    tipo_aula: Optional[str] = None
+    estudo: Optional[str] = None
+    alunos_confirmados: Optional[int] = None
+    max_alunos: Optional[int] = None
+    status: Optional[StatusAula] = None
 
-class MinhaAgendaOut(MinhaAgendaBase):
+class AgendaOut(AgendaBase):
     id: int
 
     class Config:
         orm_mode = True
 
-# ---- AlunosNaAula ----
-class AlunosNaAulaBase(BaseModel):
-    agendamento_id: int
-    aula_id: int
+# --- AlunoNaAula ---
+class AlunoNaAulaBase(BaseModel):
+    agenda_id: int
     aluno_nome: str
     presenca: Optional[Presenca] = Presenca.indefinido
     observacoes: Optional[str] = None
 
-class AlunosNaAulaCreate(AlunosNaAulaBase):
+class AlunoNaAulaCreate(AlunoNaAulaBase):
     pass
 
-class AlunosNaAulaUpdate(AlunosNaAulaBase):
-    pass
+class AlunoNaAulaUpdate(BaseModel):
+    presenca: Optional[Presenca] = None
+    observacoes: Optional[str] = None
 
-class AlunosNaAulaOut(AlunosNaAulaBase):
+class AlunoNaAulaOut(AlunoNaAulaBase):
+    id: int
+
     class Config:
         orm_mode = True
 
-# ---- DadosDosAlunos ----
-class DadosDosAlunosBase(BaseModel):
+# --- DadosAluno ---
+class DadosAlunoBase(BaseModel):
     nome: str
     telefone: Optional[str] = None
     restricoes: Optional[str] = None
     interesses: Optional[str] = None
     evolucao: Optional[str] = None
 
-class DadosDosAlunosCreate(DadosDosAlunosBase):
+class DadosAlunoCreate(DadosAlunoBase):
     pass
 
-class DadosDosAlunosUpdate(DadosDosAlunosBase):
-    pass
+class DadosAlunoUpdate(BaseModel):
+    nome: Optional[str] = None
+    telefone: Optional[str] = None
+    restricoes: Optional[str] = None
+    interesses: Optional[str] = None
+    evolucao: Optional[str] = None
 
-class DadosDosAlunosOut(DadosDosAlunosBase):
+class DadosAlunoOut(DadosAlunoBase):
     id: int
 
     class Config:
