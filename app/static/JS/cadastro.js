@@ -20,11 +20,24 @@ document.querySelectorAll('.cancelar').forEach(btn => {
     });
 });
 
+// --- Submit do formulário de aluno ---
 document.getElementById('form-aluno').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const formData = new FormData(this);
-    const data = Object.fromEntries(formData.entries()); // converte para JSON
+    const data = Object.fromEntries(formData.entries());
+
+    // Certifique-se que todos os campos da model estão presentes
+    // incluindo cpf e senha
+    const payload = {
+        nome: data.nome,
+        cpf: data.cpf,
+        email: data.email,
+        senha: data.senha,
+        telefone: data.telefone || null,
+        data_nascimento: data.data_nascimento || null,
+        status_pagamento: data.status_pagamento || 'pendente'
+    };
 
     try {
         const response = await fetch('/alunos/cadastro/aluno', {
@@ -32,7 +45,7 @@ document.getElementById('form-aluno').addEventListener('submit', async function(
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(payload)
         });
 
         if (response.ok) {

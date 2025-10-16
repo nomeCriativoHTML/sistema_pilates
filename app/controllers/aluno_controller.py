@@ -1,25 +1,29 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.models.aluno import Aluno
-from app.schema.aluno import AlunoCreate, AlunoUpdate
+from app.schema.aluno import AlunoCreate, AlunoUpdate  # observe o nome correto do arquivo schema
 
 class AlunoController:
 
     @staticmethod
     def criar_aluno(db: Session, aluno: AlunoCreate):
-        # Verificar se o email já existe
-        aluno_existente = db.query(Aluno).filter(Aluno.email == aluno.email).first()
+        # Verificar se já existe aluno com mesmo CPF ou email
+        aluno_existente = db.query(Aluno).filter(
+            (Aluno.email == aluno.email) | (Aluno.cpf == aluno.cpf)
+        ).first()
         if aluno_existente:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="E-mail já cadastrado."
+                detail="Aluno com CPF ou email já cadastrado."
             )
 
         # Criar novo aluno
         novo_aluno = Aluno(
             nome=aluno.nome,
+            cpf=aluno.cpf,
             telefone=aluno.telefone,
             email=aluno.email,
+            senha=aluno.senha,  # futuramente você pode hashear a senha
             data_nascimento=aluno.data_nascimento,
             status_pagamento=aluno.status_pagamento
         )
@@ -31,8 +35,7 @@ class AlunoController:
 
     @staticmethod
     def listar_alunos(db: Session):
-        alunos = db.query(Aluno).all()
-        return alunos
+        return db.query(Aluno).all()
 
     @staticmethod
     def obter_aluno(db: Session, aluno_id: int):
@@ -53,7 +56,7 @@ class AlunoController:
                 detail="Aluno não encontrado."
             )
 
-        update_data = aluno_data.dict(exclude_unset=True)
+        update_data = aluno_data.model_dump(exclude_unset=True)  # para compatibilidade com Pydantic v2
         for key, value in update_data.items():
             setattr(aluno, key, value)
 

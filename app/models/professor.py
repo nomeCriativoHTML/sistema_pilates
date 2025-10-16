@@ -19,6 +19,7 @@ class Professor(Base):
     ativo = Column(Boolean, default=True)
 
     # Relacionamentos
+    agendamentos = relationship("Agendamento", back_populates="professor", cascade="all, delete-orphan")
     evolucoes = relationship("MinhaEvolucao", back_populates="professor", cascade="all, delete-orphan")
     agendas = relationship("Agenda", back_populates="professor", cascade="all, delete-orphan")
 
@@ -37,6 +38,8 @@ class Agenda(Base):
     alunos_confirmados = Column(Integer, default=0)
     max_alunos = Column(Integer, default=3)
     status = Column(Enum(StatusAula), default=StatusAula.disponivel)
+
+    agendamentos = relationship("Agendamento", back_populates="aula", cascade="all, delete-orphan")
 
     professor = relationship("Professor", back_populates="agendas")
     alunos = relationship("AlunoNaAula", back_populates="agenda", cascade="all, delete-orphan")
