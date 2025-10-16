@@ -3,7 +3,9 @@ from enum import Enum
 from datetime import datetime, date
 from typing import Optional
 
-# Enums
+# ===========================
+# ENUMS
+# ===========================
 class StatusPagamento(str, Enum):
     pendente = "pendente"
     pago = "pago"
@@ -19,7 +21,9 @@ class Presenca(str, Enum):
     ausente = "ausente"
     indefinido = "indefinido"
 
-# ---- MinhaConta ----
+# ===========================
+# ALUNO
+# ===========================
 class AlunoBase(BaseModel):
     nome: str
     telefone: Optional[str] = None
@@ -28,17 +32,22 @@ class AlunoBase(BaseModel):
     status_pagamento: StatusPagamento = StatusPagamento.pendente
 
 class AlunoCreate(AlunoBase):
-    pass
+    cpf: str
+    senha: str
 
 class AlunoUpdate(AlunoBase):
-    pass
+    cpf: Optional[str] = None
+    senha: Optional[str] = None
 
 class AlunoOut(AlunoBase):
     id: int
+    cpf: str
 
-    model_config = ConfigDict(from_attributes=True) 
+    model_config = ConfigDict(from_attributes=True)
 
-# ---- AulasDisponiveis ----
+# ===========================
+# AULAS DISPONIVEIS
+# ===========================
 class AulasDisponiveisBase(BaseModel):
     data_hora: datetime
     professor: str
@@ -56,9 +65,11 @@ class AulasDisponiveisOut(AulasDisponiveisBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-# ---- MinhaEvolucao ----
+# ===========================
+# MINHA EVOLUÇÃO
+# ===========================
 class MinhaEvolucaoBase(BaseModel):
-    data_aula: date
+    data_aula: datetime
     professor: str
     exercicios_realizados: Optional[str] = None
     observacoes: Optional[str] = None
@@ -75,7 +86,9 @@ class MinhaEvolucaoOut(MinhaEvolucaoBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-# ---- MeusPagamentos ----
+# ===========================
+# MEUS PAGAMENTOS
+# ===========================
 class MeusPagamentosBase(BaseModel):
     valor: float
     data_pagamento: date
@@ -93,7 +106,9 @@ class MeusPagamentosOut(MeusPagamentosBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-# ---- Agendamentos ----
+# ===========================
+# AGENDAMENTOS
+# ===========================
 class AgendamentosBase(BaseModel):
     data_hora: datetime
     professor: str
