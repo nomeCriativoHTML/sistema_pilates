@@ -32,7 +32,6 @@ class Professor(Base):
     ativo = Column(Boolean, default=True)
 
     # Relacionamentos
-    pagamentos = relationship("Pagamento", back_populates="professor", cascade="all, delete-orphan")
     evolucao = relationship("EvolucaoAluno", back_populates="professor", cascade="all, delete-orphan")
     agendas = relationship("Agenda", back_populates="professor", cascade="all, delete-orphan")
 
